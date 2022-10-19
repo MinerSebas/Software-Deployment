@@ -1,0 +1,95 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location of the resources."
+            }
+        },
+        "tag": {
+            "type": "string",
+            "metadata": {
+                "description": "Tag for the resources"
+            }
+        },
+        "storageAccount-name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the storage account."
+            }
+        },
+        "serverfarm-name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the serverfarm."
+            }
+        },
+        "site-name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the website."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('storageAccount-name')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "tag": "[parameters('tag')]"
+            },
+            "sku": { "name": "Standard_LRS" },
+            "kind": "StorageV2",
+            "properties": {
+                "supportsHttpsTrafficOnly": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2022-03-01",
+            "name": "[parameters('serverfarm-name')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "F1",
+                "tier": "Free",
+                "size": "F1",
+                "family": "F",
+                "capacity": 1
+            },
+            "kind": "linux",
+            "properties": {
+                "perSiteScaling": false,
+                "reserved": true,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            },
+            "tags": {
+                "tag": "[parameters('tag')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('site-name')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarm-name'))]"
+            ],
+            "kind": "app",
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarm-name'))]",
+                "siteConfig": {
+                    "linuxFxVersion": "NODE|lts"
+                }
+            },
+            "tags": {
+                "tag": "[parameters('tag')]"
+            }
+        }
+    ]
+}
