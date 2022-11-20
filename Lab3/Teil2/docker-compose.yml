@@ -1,0 +1,26 @@
+services:
+  db:
+    image: mymysql
+    build: ./MySQL
+    volumes:
+      - my_db_data:/var/lib/mysql
+    restart: always
+    expose:
+      - 3306
+      - 33060
+  wordpress:
+    image: mywordpress
+    build: ./Wordpress
+    volumes:
+      - my_wp_data:/var/www/html
+    ports:
+      - 8080:80
+    restart: always
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+volumes:
+  my_db_data:
+  my_wp_data:
