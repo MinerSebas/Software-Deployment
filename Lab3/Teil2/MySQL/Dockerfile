@@ -24,11 +24,3 @@ mysql --user=root --password=somewordpress -e "CREATE DATABASE IF NOT EXISTS wor
 mysql --user=root --password=somewordpress -e "GRANT all privileges ON wordpress.* TO 'wordpress'@'%';" \
 mysql --user=root --password=somewordpress -e "flush privileges;" && \
 mysqld
-
-#RUN apt-get install -y --no-install-recommends mysql-server-8.0 mysql-client
-#RUN apk add --no-cache python2 g++ make
-#WORKDIR /app
-#COPY . .
-#RUN yarn install --production
-#CMD ["node", "src/index.js"]
-#EXPOSE 3000
